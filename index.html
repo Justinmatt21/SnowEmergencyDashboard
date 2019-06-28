@@ -15,6 +15,11 @@
             <div id="toggleContainer">
                     <table>
                         <tr>
+                          <td>
+                            <select id="selDataset" onchange="optionChanged(this.value)"></select>
+                          </td>
+                        </tr>
+                        <tr>
                             <td><label class="switch">
                                 <input id="hood-toggle" type="checkbox">
                                 <div class="slider round"></div>
@@ -30,21 +35,22 @@
                         </tr>
                         <tr>
                           <td><label class="switch">
-                              <input id="grant-toggle" type="checkbox">
+                              <input id="tows-toggle" type="checkbox">
                               <div class="slider round"></div>
                           </label></td>
-                          <td>2015 Grant Tows</td>
+                          <td>Tows</td>
                       </tr>
                       <tr>
                         <td><label class="switch">
-                            <input id="howe-toggle" type="checkbox">
+                            <input id="tickets-toggle" type="checkbox">
                             <div class="slider round"></div>
                         </label></td>
-                        <td>2018 Howe Tows</td>
+                        <td>Tickets</td>
                     </tr>
                     </table>
                 </div>
               <div id="mapContainer"></div>
+      <script src="static/js/app.js"></script>
       <script src="static/js/mapping.js"></script>
     </body>
     </html>

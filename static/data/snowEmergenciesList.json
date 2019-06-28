@@ -1,0 +1,6 @@
+{
+	"snowEmergencies": [
+		{"name":"2015 Grant","year":"2015","towsgeojson":"https://opendata.arcgis.com/datasets/2726be2ce37141de9969105666700b9b_0.geojson","tagsgeojson":"https://opendata.arcgis.com/datasets/82b505b7a6004caca5f53bbe61e71366_0.geojson"},
+		{"name":"2018 Howe","year":"2018","towsgeojson":"https://opendata.arcgis.com/datasets/0bf74f21025c49b386e64376043053b2_0.geojson","tagsgeojson":"https://opendata.arcgis.com/datasets/ebd26401443d4d28911adb5c367240db_0.geojson"}
+	]
+}

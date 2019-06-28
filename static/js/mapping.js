@@ -96,8 +96,11 @@
     var hoodCheckbox = document.querySelector('input[id="hood-toggle"]');
     var commCheckbox = document.querySelector('input[id="comm-toggle"]');
 
-    var grantCheckbox = document.querySelector('input[id="grant-toggle"]');
-    var howeCheckbox = document.querySelector('input[id="howe-toggle"]');
+    var towsCheckbox = document.querySelector('input[id="tows-toggle"]');
+    var ticketsCheckbox = document.querySelector('input[id="tickets-toggle"]');
+
+    // var grantCheckbox = document.querySelector('input[id="grant-toggle"]');
+    // var howeCheckbox = document.querySelector('input[id="howe-toggle"]');
 
     hoodCheckbox.onchange = function() {
       if(this.checked) {
@@ -116,44 +119,86 @@
         d3.selectAll(".communities").attr("visibility", "hidden");
       }
     };
+
+    towsCheckbox.onchange = function() {
+        if(this.checked) {
+          d3.selectAll(".tows").attr("visibility", "visible");
+        } else {
+          d3.selectAll(".tows").attr("visibility", "hidden");
+        }
+      };
+
+    ticketsCheckbox.onchange = function() {
+        if(this.checked) {
+          d3.selectAll(".tickets").attr("visibility", "visible");
+        } else {
+          d3.selectAll(".tickets").attr("visibility", "hidden");
+        }
+      };
     
-    grantCheckbox.onchange = function() {
-      if(this.checked) {
-        var grantTows2015 = svg.append('g')
-          .attr( "id", "grantTows2015");
-        grantTows2015Url = "https://opendata.arcgis.com/datasets/2726be2ce37141de9969105666700b9b_0.geojson";
-        d3.json(grantTows2015Url).then(function(mapData) {
-        grantTows2015.selectAll('path')
-          .data(mapData.features)
-          .enter()
-          .append('path')
-          .attr( "class", "tows")
-          .attr("stroke", "white")
-          .attr('fill', 'red')
-          .attr('d', geoPath);
-    });
-      } else {
-        d3.select("#grantTows2015").remove();
-      }
-    };
+    // grantCheckbox.onchange = function() {
+    //   if(this.checked) {
+    //     var grantTows2015 = svg.append('g')
+    //       .attr( "id", "grantTows2015");
+    //     grantTows2015Url = "https://opendata.arcgis.com/datasets/2726be2ce37141de9969105666700b9b_0.geojson";
+    //     d3.json(grantTows2015Url).then(function(mapData) {
+    //     grantTows2015.selectAll('path')
+    //       .data(mapData.features)
+    //       .enter()
+    //       .append('path')
+    //       .attr( "class", "tows")
+    //       .attr("stroke", "white")
+    //       .attr('fill', 'red')
+    //       .attr('d', geoPath);
+    // });
+    //   } else {
+    //     d3.select("#grantTows2015").remove();
+    //   }
+    // };
 
-    howeCheckbox.onchange = function() {
-      if(this.checked) {
-        var howeTows2018 = svg.append('g')
-          .attr( "id", "howeTows2018");
-          howeTows2018Url = "https://opendata.arcgis.com/datasets/0bf74f21025c49b386e64376043053b2_0.geojson";
-        d3.json(howeTows2018Url).then(function(mapData) {
-          howeTows2018.selectAll('path')
-          .data(mapData.features)
-          .enter()
-          .append('path')
-          .attr( "class", "tows")
-          .attr("stroke", "white")
-          .attr('fill', 'yellow')
-          .attr('d', geoPath);
-    });
-      } else {
-        d3.select("#howeTows2018").remove();
-      }
-    };
+    // howeCheckbox.onchange = function() {
+    //   if(this.checked) {
+    //     var howeTows2018 = svg.append('g')
+    //       .attr( "id", "howeTows2018");
+    //       howeTows2018Url = "https://opendata.arcgis.com/datasets/0bf74f21025c49b386e64376043053b2_0.geojson";
+    //     d3.json(howeTows2018Url).then(function(mapData) {
+    //       howeTows2018.selectAll('path')
+    //       .data(mapData.features)
+    //       .enter()
+    //       .append('path')
+    //       .attr( "class", "tows")
+    //       .attr("stroke", "white")
+    //       .attr('fill', 'yellow')
+    //       .attr('d', geoPath);
+    // });
+    //   } else {
+    //     d3.select("#howeTows2018").remove();
+    //   }
+    // };
 
+function plotSnowEmergency(snowEmergency) {
+    d3.select("#snowDots").remove();
+
+    var snowDots = svg.append('g')
+        .attr("id", "snowDots");
+    d3.json(snowEmergency["towsgeojson"]).then(function(mapData) {
+        snowDots.selectAll('path')
+        .data(mapData.features)
+        .enter()
+        .append('path')
+        .attr( "class", "tows")
+        .attr("stroke", "white")
+        .attr('fill', 'red')
+        .attr('d', geoPath);
+    });
+    d3.json(snowEmergency["tagsgeojson"]).then(function(mapData) {
+        snowDots.selectAll('path')
+        .data(mapData.features)
+        .enter()
+        .append('path')
+        .attr( "class", "tickets")
+        .attr("stroke", "white")
+        .attr('fill', 'yellow')
+        .attr('d', geoPath);
+    });
+}
