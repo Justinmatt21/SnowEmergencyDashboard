@@ -3,7 +3,7 @@ function init() {
     var selector = d3.select("#selDataset");
   
     // Use the list of sample names to populate the select options
-    d3.json("static/data/snowEmergenciesList.json").then((snowEmergs) => {
+    d3.json("../static/data/snowEmergenciesList.json").then((snowEmergs) => {
     console.log(snowEmergs);
       snowEmergs["snowEmergencies"].forEach((snowEmerg) => {
         selector
@@ -18,7 +18,7 @@ function init() {
   }
   
   function optionChanged(newSnowEmerg) {
-    d3.json("static/data/snowEmergenciesList.json").then((snowEmergs) => {
+    d3.json("../static/data/snowEmergenciesList.json").then((snowEmergs) => {
           snowEmergs["snowEmergencies"].forEach((snowEmerg) => {
             if (snowEmerg["name"] === newSnowEmerg) {
                 plotSnowEmergency(snowEmerg);
@@ -26,6 +26,13 @@ function init() {
           });
     });
   }
-  
-  // Initialize the dashboard
-  init();
+
+function initChart() {
+  d3.json("/sql").then((response) => {
+    console.log(response);
+  });
+};
+
+// Initialize the dashboard
+init();
+

@@ -1,0 +1,72 @@
+<html>
+    <head>
+      <title>A D3 map</title>
+      <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u"
+    crossorigin="anonymous">
+      <script src="https://d3js.org/d3.v5.min.js"></script>
+      <script src='../static/data/mplsNeighborhoods.js'></script>
+      <script src='../static/data/mplsCommunities.js'></script>
+      <!--<link rel= "stylesheet" type= "text/css" href= "{{ url_for('static',filename='styles/style.css') }}">-->
+      <link rel="stylesheet" type = "text/css" href = "../static/styles/style.css">
+      <style>
+      #mapContainer {
+        overflow: hidden;
+      }
+      
+      </style>
+    </head>
+    <body>
+          <div class = "hero text-center">
+              <h1 class = "hero-text">Snow Emergencies</h1>
+          </div>
+
+
+            <div id="toggleContainer" class="row">
+                  <div class = "col-md-3">
+                    <table class = "table table-borderless">
+                        <tr>
+                          <td class = "right-align">
+                            <select id="selDataset" onchange="optionChanged(this.value)"></select>
+                          </td>
+                        </tr>
+                        <tr>
+                            <td><label class="switch">
+                                <input id="hood-toggle" type="checkbox" checked>
+                                <div class="slider round"></div>
+                            </label></td>
+                            <td>Neighborhoods</td>
+                        </tr>
+                        <tr>
+                            <td class="right-align"><label class="switch">
+                                <input id="comm-toggle" type="checkbox" checked>
+                                <div class="slider round"></div>
+                            </label></td>
+                            <td>Communities</td>
+                        </tr>
+                        <tr>
+                          <td><label class="switch">
+                              <input id="tows-toggle" type="checkbox" checked>
+                              <div class="slider round"></div>
+                          </label></td>
+                          <td>Tows</td>
+                      </tr>
+                      <tr>
+                        <td><label class="switch">
+                            <input id="tickets-toggle" type="checkbox" checked>
+                            <div class="slider round"></div>
+                        </label></td>
+                        <td>Tickets</td>
+                    </tr>
+                    </table>
+                  </div>
+                </div>
+            <div class="row">
+              <div id="mapContainer"></div>
+            </div>
+
+
+      <script src="../static/js/app.js"></script>
+      <script src="../static/js/mapping.js"></script>
+
+    </body>
+</html>
