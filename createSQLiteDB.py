@@ -16,7 +16,7 @@ def create_connection(db_file):
         conn.close()
  
 if __name__ == '__main__':
-    create_connection("//Users//xantar//Desktop//Project2Two//Project2//static//db//snowemergency.sqlite")
+    create_connection("static/db/snowemergency.sqlite")
 
 
 low_memory = False
