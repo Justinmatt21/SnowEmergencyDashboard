@@ -16,23 +16,26 @@ def create_connection(db_file):
         conn.close()
  
 if __name__ == '__main__':
-    create_connection("//Users//xantar//Desktop//Project2//db//snowemergency.db")
+    create_connection("//Users//xantar//Desktop//Project2Two//Project2//static//db//snowemergency.sqlite")
 
 
 low_memory = False
 
 # load data
-parking_df = pd.read_csv('../ForDBParking.csv')
-towing_df = pd.read_csv("../ForDBTowing.csv")
+parking_df = pd.read_csv("static/data/finalParking.csv")
+towing_df = pd.read_csv("static/data/finalTowing.csv")
+snowfall_df = pd.read_csv("static/data/final_snowfall_and_tows.csv")
 
 # strip whitespace from headers
 parking_df.columns = parking_df.columns.str.strip()
 towing_df.columns = towing_df.columns.str.strip()
+snowfall_df.columns = snowfall_df.columns.str.strip()
 
-conn = sqlite3.connect("../db/snowemergency.db")
+conn = sqlite3.connect("static/db/snowemergency.sqlite")
 
 # drop data into database
 parking_df.to_sql("parking", conn)
 towing_df.to_sql("towing", conn)
+snowfall_df.to_sql("snowfall", conn)
 
 conn.close()
