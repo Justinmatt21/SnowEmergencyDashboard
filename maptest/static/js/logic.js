@@ -8,7 +8,7 @@ d3.csv("static/data/mn_weather_stations.csv", function(err, stationData) {
   // if (err) throw err;
   console.log("Passed error check");
 
-  createFeatures(mplsNeighborhoods, stationData, towingData, "");
+  createFeatures(mplsNeighborhoods, stationData, towingData);
   })
 });
 
@@ -25,7 +25,57 @@ function createEmergencyLayer(towingData, emergency) {
   return tows;
 }
 
-function createFeatures(neighborhoodData, stationData, towingData, emergencies) {
+/* This doesn't make any use of snowfall amounts .... 
+need a choropleth... */
+
+function createSnowFallLayer(towingData, emergency) {
+
+  let snows = [];
+  // = L.markerClusterGroup();
+
+  towingData.forEach(function(data) {
+
+    if (data.emergency === emergency) {
+      snows.push([data.latitude, data.longitude]);
+    }
+  });
+
+  let snowHeatLayer = L.heatLayer(snows);
+ 
+  return snowHeatLayer;
+
+  /* 
+  geojson = L.choropleth(data, {
+
+    // Define what  property in the features to use
+    valueProperty: "MHI",
+
+    // Set color scale
+    scale: ["#ffffb2", "#b10026"],
+
+    // Number of breaks in step range
+    steps: 10,
+
+    // q for quartile, e for equidistant, k for k-means
+    mode: "q",
+    style: {
+      // Border color
+      color: "#fff",
+      weight: 1,
+      fillOpacity: 0.8
+    },
+
+    // Binding a pop-up to each layer
+    onEachFeature: function(feature, layer) {
+      layer.bindPopup(feature.properties.LOCALNAME + ", " + feature.properties.State + "<br>Median Household Income:<br>" +
+        "$" + feature.properties.MHI);
+    }
+  })
+  */
+ 
+}
+
+function createFeatures(neighborhoodData, stationData, towingData) {
 
   // Create a GeoJSON layer containing the features array on neighborhood object
   var neighborhoods = L.geoJSON(neighborhoodData, {
@@ -79,19 +129,21 @@ function createFeatures(neighborhoodData, stationData, towingData, emergencies) 
   });
 
   let towsList = [];
+  let snowsList = [];
 
   let emergencyList = ['Armatage', 'Dana', 'Diamond Lake', 'Ferry', 'Howe', 'Jane', 'Olive', 'Pembina', 'Quincy', 'Upton', 'Westminster', 'Xerxes', 'Yale', 'Yardville', 'Grant', 'Polk'];
 
   emergencyList.forEach(function(emergency) {
     towsList.push(createEmergencyLayer(towingData, emergency));
+    snowsList.push(createSnowFallLayer(towingData, emergency));
   })
   
  
   // Sending our earthquakes layer to the createMap function
-  createMap(neighborhoods, stations, towsList, emergencyList);
+  createMap(neighborhoods, stations, towsList, snowsList, emergencyList);
 }
 
-function createMap(neighborhoods, stations, towsList, emergencyList) {
+function createMap(neighborhoods, stations, towsList, snowsList, emergencyList) {
 
   // Define streetmap and darkmap layers
   var satelliteMap = L.tileLayer("https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}", {
@@ -129,8 +181,9 @@ function createMap(neighborhoods, stations, towsList, emergencyList) {
   };
 
   towsList.forEach((tow, i) => overlayMaps[emergencyList[i]] = tow);
+  snowsList.forEach((snow, i) => overlayMaps[`Snow ${emergencyList[i]}`] = snow);
 
-  let layersList = [satelliteMap, neighborhoods, stations].concat(towsList);
+  let layersList = [satelliteMap, neighborhoods, stations].concat(towsList).concat(snowsList);
 
   // Create our map, giving it the satellite and earthquakes layers to display on load
   var myMap = L.map("map", {
