@@ -1,204 +1,268 @@
+var map = d3.select('#mapContainer');
 
-    var map = d3.select('#mapContainer');
-    //Part of zooming functionality
-    // var width = map.node().getBoundingClientRect().width;
-    // var height = width / 1.5;
-    var width = 700;
-    var height = 580;
-    
-    var svg = map
-      .append('svg')
-      .attr('width', width)
-      .attr('height',height);
-    
-    var neighborhoods = svg.append('g');
-    var communities = svg.append('g');
-    
-    var albersProjection = d3.geoAlbers()
-      .scale(190000)
-      .rotate([93.2650, 0])
-      .center([0, 44.9778])
-      .translate([width/2, height/2]);
+var margin = {top: -5, right: -5, bottom: -5, left: -5},
+width = 700 - margin.left - margin.right,
+height = 580 - margin.top - margin.bottom;
 
-    //Part of zooming functionality
-    //   svg 
-    //     .call(d3.zoom()
-    //       .scaleExtent([0.2, 10])
-    //       .translateExtent([[0,0], [width, height]])
-    //       .extent([[0, 0], [width, height]])
-    //       .on("zoom", function () {
-    //         svg.attr("transform", d3.event.transform)
-    //       })
-    //   )
-    
-    var geoPath = d3.geoPath()
-        .projection(albersProjection);
-    
-    neighborhoods.selectAll('path')
-      .data(mplsNeighborhoods.features)
-      .enter()
-      .append('path')
-      .attr( "class", "neighborhoods")
-      .attr('fill', '#ccc')
-      .attr("stroke", "blue")
-      .attr("stroke-width", 1)
-      .attr('d', geoPath);
+// var pi = Math.PI,
+// tau = 2 * pi;
 
-    communities.selectAll('path')
-      .data(mplsCommunities.features)
-      .enter()
-      .append('path')
-      .attr( "class", "communities")
-      .attr('fill', 'transparent')
-      .attr("stroke", "black")
-      .attr("stroke-width", 2)
-      .attr('d', geoPath);
-    
-    //Functions for this commented section are built into the check box selections, but preserved until certainty of not being needed
-    // grantTows2015Url = "https://opendata.arcgis.com/datasets/2726be2ce37141de9969105666700b9b_0.geojson"; 
-    // grantTows2015Url = "static/data/Snow_Emergency_Grant_Tows_2015.geojson";
+var svg = map
+  .append('svg')
+  .attr("width", width + margin.left + margin.right)
+  .attr("height", height + margin.top + margin.bottom);
 
-    // d3.json(grantTows2015Url).then(function(mapData) {
-    //   grantTows2015.selectAll('path')
-    //     .data(mapData.features)
-    //     .enter()
-    //     .append('path')
-    //     .attr( "class", "tows")
-    //     .attr("stroke", "white")
-    //     .attr('fill', 'red')
-    //     .attr('d', geoPath);
-    // });
-    
-    // grantTows2015.selectAll('circle')
-    //   .data(tows2015Grant.features)
-    //   .enter()
-    //   .append('circle')
-    //   .attr( "class", "tows")
-    //   .attr('fill', 'red')
-    //   .attr("cx",function(d) { 
-    //     if (d["geometry"] === undefined) {
-    //       // console.log(true);
-    //     } else {
-    //       // console.log(albersProjection([d["geometry"]["x"],d["geometry"]["y"]])[0]);
-    //       return albersProjection([d["geometry"]["x"],d["geometry"]["y"]])[0];
-    //     }
-    //   })
-    //   .attr("cy",function(d) {       
-    //     if (d["geometry"] === undefined) {
-    //       // console.log(true);
-    //     } else {
-    //       // console.log(albersProjection([d["geometry"]["x"],d["geometry"]["y"]])[1]);
-    //       return albersProjection([d["geometry"]["x"],d["geometry"]["y"]])[1];
-    //     }
-    //   })
-    //   .attr("r","2px");
+var projection = d3.geoMercator()
+  .scale(125000)
+  .rotate([93.2650, 0])
+  .center([0, 44.9778])
+  .translate([width/2, height/2]);
 
-    var hoodCheckbox = document.querySelector('input[id="hood-toggle"]');
-    var commCheckbox = document.querySelector('input[id="comm-toggle"]');
+var geoPath = d3.geoPath()
+    .projection(projection);
 
-    var towsCheckbox = document.querySelector('input[id="tows-toggle"]');
-    var ticketsCheckbox = document.querySelector('input[id="tickets-toggle"]');
+//Adding tiles
 
-    // var grantCheckbox = document.querySelector('input[id="grant-toggle"]');
-    // var howeCheckbox = document.querySelector('input[id="howe-toggle"]');
 
-    hoodCheckbox.onchange = function() {
-      if(this.checked) {
-        d3.selectAll(".neighborhoods").attr("visibility", "visible");
-        d3.selectAll(".communities").attr('fill', 'transparent');
-      } else {
-        d3.selectAll(".neighborhoods").attr("visibility", "hidden");
-        d3.selectAll(".communities").attr('fill', '#ccc');
-      }
-    };
 
-    commCheckbox.onchange = function() {
-      if(this.checked) {
-        d3.selectAll(".communities").attr("visibility", "visible");
-      } else {
-        d3.selectAll(".communities").attr("visibility", "hidden");
-      }
-    };
+// End Adding tiles
 
-    towsCheckbox.onchange = function() {
-        if(this.checked) {
-          d3.selectAll(".tows").attr("visibility", "visible");
-        } else {
-          d3.selectAll(".tows").attr("visibility", "hidden");
-        }
-      };
+//Adding zoom
 
-    ticketsCheckbox.onchange = function() {
-        if(this.checked) {
-          d3.selectAll(".tickets").attr("visibility", "visible");
-        } else {
-          d3.selectAll(".tickets").attr("visibility", "hidden");
-        }
-      };
-    
-    // grantCheckbox.onchange = function() {
-    //   if(this.checked) {
-    //     var grantTows2015 = svg.append('g')
-    //       .attr( "id", "grantTows2015");
-    //     grantTows2015Url = "https://opendata.arcgis.com/datasets/2726be2ce37141de9969105666700b9b_0.geojson";
-    //     d3.json(grantTows2015Url).then(function(mapData) {
-    //     grantTows2015.selectAll('path')
-    //       .data(mapData.features)
-    //       .enter()
-    //       .append('path')
-    //       .attr( "class", "tows")
-    //       .attr("stroke", "white")
-    //       .attr('fill', 'red')
-    //       .attr('d', geoPath);
-    // });
-    //   } else {
-    //     d3.select("#grantTows2015").remove();
-    //   }
-    // };
+var zoom = d3.zoom()
+    .scaleExtent([1, 15])
+    .on('zoom', zoomed);
 
-    // howeCheckbox.onchange = function() {
-    //   if(this.checked) {
-    //     var howeTows2018 = svg.append('g')
-    //       .attr( "id", "howeTows2018");
-    //       howeTows2018Url = "https://opendata.arcgis.com/datasets/0bf74f21025c49b386e64376043053b2_0.geojson";
-    //     d3.json(howeTows2018Url).then(function(mapData) {
-    //       howeTows2018.selectAll('path')
-    //       .data(mapData.features)
-    //       .enter()
-    //       .append('path')
-    //       .attr( "class", "tows")
-    //       .attr("stroke", "white")
-    //       .attr('fill', 'yellow')
-    //       .attr('d', geoPath);
-    // });
-    //   } else {
-    //     d3.select("#howeTows2018").remove();
-    //   }
-    // };
+svg.call(zoom);
 
-function plotSnowEmergency(snowEmergency) {
-    d3.select("#snowDots").remove();
 
-    var snowDots = svg.append('g')
-        .attr("id", "snowDots");
-    d3.json(snowEmergency["towsgeojson"]).then(function(mapData) {
-        snowDots.selectAll('path')
+var g = svg.append('g');
+
+function zoomed() {
+    k = d3.event.transform.k;
+    g.attr("transform", d3.event.transform);
+    g.selectAll("circle")
+        .attr("d", projection(projection))
+        .attr("r",5/k)
+        .attr("stroke-width",1/k);
+}
+
+// //End adding zoom
+
+// Adding tooptips
+
+var div = d3.select("body").append("div")
+    .attr("class", "tooltip")
+    .style("opacity", 0);
+
+// End adding tooltips
+
+  cityBoundaryUrl = "https://opendata.arcgis.com/datasets/89f1a70c0cf24d7692e2d02fdf8f4e47_0.geojson";
+  d3.json(cityBoundaryUrl).then(function(cityData) {
+    // cityBoundary.selectAll('path')
+    g.selectAll('path')
+    .data(cityData.features)
+    .enter()
+    .append('path')
+    .attr( "class", "city-boundary")
+    .attr('fill', '#ccc')
+    .attr("stroke", "black")
+    .attr("stroke-width", 2)
+    .attr('d', geoPath);
+  });
+  
+  communitiesUrl = "https://opendata.arcgis.com/datasets/e0a3b6a4c23b4a03b988388553cb9638_0.geojson";
+  d3.json(communitiesUrl).then(function(commData) {
+    g.selectAll('path')
+    .data(commData.features)
+    .enter()
+    .append('path')
+    .attr("class", "communities-boundary")
+    .attr('fill', 'transparent')
+    .attr("stroke", "black")
+    .attr("stroke-width", 2)
+    .attr('d', geoPath);
+
+    g.selectAll("text")
+    .data(commData.features)
+    .enter()
+    .append("svg:text")
+    .attr("class", "communities-name")
+    .text(function(d){
+        return d.properties.CommName;
+    })
+    .attr("x", function(d){
+        return geoPath.centroid(d)[0];
+    })
+    .attr("y", function(d){
+        return  geoPath.centroid(d)[1];
+    })
+    .attr("text-anchor","middle")
+    .attr('font-size','8px');
+  });
+
+  neighborhoodsUrl = "https://opendata.arcgis.com/datasets/055ca54e5fcc47329f081c9ef51d038e_0.geojson";
+  d3.json(neighborhoodsUrl).then(function(hoodData) {
+  g.selectAll('path')
+    .data(hoodData.features)
+    .enter()
+    .append('path')
+    .attr("class", "neighborhoods-boundary")
+    .attr('fill', 'transparent')
+    .attr("stroke", "blue")
+    .attr("stroke-width", 1)
+    .attr('d', geoPath);
+
+  g.selectAll("text")
+    .data(hoodData.features)
+    .enter()
+    .append("svg:text")
+    .attr("class", "neighborhoods-name")
+    .text(function(d){
+        return d.properties.BDNAME;
+    })
+    .attr("x", function(d){
+        return geoPath.centroid(d)[0];
+    })
+    .attr("y", function(d){
+        return  geoPath.centroid(d)[1];
+    })
+    .attr("text-anchor","middle")
+    .attr('font-size','3px');
+  });
+
+var hoodCheckbox = document.querySelector('input[id="hood-toggle"]');
+var commCheckbox = document.querySelector('input[id="comm-toggle"]');
+
+var towsCheckbox = document.querySelector('input[id="tows-toggle"]');
+var ticketsCheckbox = document.querySelector('input[id="tickets-toggle"]');
+
+hoodCheckbox.onchange = function() {
+  if(this.checked) {
+    d3.selectAll(".neighborhoods-boundary").attr("visibility", "visible");
+    d3.selectAll(".neighborhoods-name").attr("visibility", "visible");
+  } else {
+    d3.selectAll(".neighborhoods-boundary").attr("visibility", "hidden");
+    d3.selectAll(".neighborhoods-name").attr("visibility", "hidden");
+    d3.selectAll(".communities-name").attr("visibility", "visible");
+  }
+};
+
+commCheckbox.onchange = function() {
+  if(this.checked) {
+    d3.selectAll(".communities-boundary").attr("visibility", "visible");
+    d3.selectAll(".communities-name").attr("visibility", "visible");
+  } else {
+    d3.selectAll(".communities-boundary").attr("visibility", "hidden");
+    d3.selectAll(".communities-name").attr("visibility", "hidden");
+  }
+};
+
+towsCheckbox.onchange = function() {
+    if(this.checked) {
+      d3.selectAll(".tows").attr("visibility", "visible");
+    } else {
+      d3.selectAll(".tows").attr("visibility", "hidden");
+    }
+  };
+
+ticketsCheckbox.onchange = function() {
+    if(this.checked) {
+      d3.selectAll(".tickets").attr("visibility", "visible");
+    } else {
+      d3.selectAll(".tickets").attr("visibility", "hidden");
+    }
+  };
+
+  function plotSnowEmergency(snowEmergency) {
+      g.transition()
+      .duration(750)
+      .call(zoom.transform, d3.zoomIdentity);
+
+      g.selectAll('circle').remove();
+      d3.json(snowEmergency["tagsgeojson"]).then(function(mapData) {
+        g.selectAll('circle')
         .data(mapData.features)
         .enter()
-        .append('path')
-        .attr( "class", "tows")
-        .attr("stroke", "white")
-        .attr('fill', 'red')
-        .attr('d', geoPath);
-    });
-    d3.json(snowEmergency["tagsgeojson"]).then(function(mapData) {
-        snowDots.selectAll('path')
-        .data(mapData.features)
-        .enter()
-        .append('path')
+        .append('circle')
+        .attr("id", "snowDots")
         .attr( "class", "tickets")
         .attr("stroke", "white")
         .attr('fill', 'yellow')
-        .attr('d', geoPath);
-    });
+        .style("opacity", 0.5)
+        .attr('r', '5px')
+        .attr("cx", function (d) {
+          if (d.geometry === null) {
+            
+        } else {
+          // console.log(projection(d.geometry.coordinates));
+          return projection(d.geometry.coordinates)[0]; }
+        })
+        .attr("cy", function (d) { 
+          if (d.geometry === null) {
+            
+        } else {
+          return projection(d.geometry.coordinates)[1]; }
+        })
+      });
+      d3.json(snowEmergency["towsgeojson"]).then(function(mapData) {        
+        g.selectAll('circle')
+          .data(mapData.features)
+          .enter()
+          .append('circle')
+          .attr("id", "snowDots")
+          .attr( "class", "tows")
+          .attr("stroke", "white")
+          .attr('fill', 'red')
+          .style("opacity", 0.5)
+          .attr('r', '5px')
+          .attr("cx", function (d) {
+            if (d.geometry === null) {
+              
+          } else {
+            // console.log(projection(d.geometry.coordinates));
+            return projection(d.geometry.coordinates)[0]; }
+          })
+          .attr("cy", function (d) { 
+            if (d.geometry === null) {
+              
+          } else {
+            return projection(d.geometry.coordinates)[1]; }
+          })
+        });
+
 }
+
+g
+  .on("mouseover", function () {
+    d3.selectAll('#snowDots')
+    .on("mouseover", function(d) {
+      if (d3.select(this).attr("class") === "tows") {
+        dotType = "Tow";
+      } else {
+        dotType = "Ticket";
+      }
+      div.transition()
+        .duration(200)
+        .style("opacity", .9);
+      div.html(dotType + "<br/>" + d.properties.Day_ID + "<br/>" + d.properties.Address)
+        .style("left", (d3.event.pageX) + "px")
+        .style("top", (d3.event.pageY - 28) + "px");
+      })
+  })
+  .on("mouseout", function () {
+    d3.selectAll('#snowDots')
+    .on("mouseout", function(d) {
+      div.transition()
+        .duration(500)
+        .style("opacity", 0);
+      });
+
+  })
+  .append('rect')
+  .attr('class', 'click-capture')
+  .style('visibility', 'hidden')
+  .attr('x', 0)
+  .attr('y', 0)
+  .attr('width', width)
+  .attr('height', height);
