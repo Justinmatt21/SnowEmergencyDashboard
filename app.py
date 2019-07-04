@@ -87,36 +87,38 @@ def emergency_summary(name):
 @app.route("/emergency_summaries")
 def emergency_summaries():
 
+    # Get total number of tows per emergency
+
     stmt_tow = db.session.query(Towing).statement
     towing_df = pd.read_sql_query(stmt_tow, db.session.bind)
 
     towcounts = towing_df.groupby(['emergency'])['emergency'].agg('count')
     
-    # print("Check 1")
+    # Get total number of tickets
 
     stmt_parking = db.session.query(Parking).statement
     parking_df = pd.read_sql_query(stmt_parking, db.session.bind)
 
     parkingcounts = parking_df.groupby(['emergency'])['emergency'].agg('count')
     
-    print("Check 2")
+    # Get average snowfall amounts for each emergency
 
     stmt_snowfall = db.session.query(Snowfall).statement
     snowfall_df = pd.read_sql_query(stmt_snowfall, db.session.bind)
-    snowfall_data = snowfall_df.loc[snowfall_df['emergency']==name,['emergency', 'date']]
+    snowfallaverage = snowfall_df.groupby(['emergency'])['Snowfall'].agg('mean')
+
 
     print("Check 3")
 
     data = {
-        "towing_emergency" : towing_data.emergency.tolist(),
-        "towing_date" : towing_data.date.tolist(),
-        "parking_emergency" : parking_data.emergency.tolist(),
-        "parking_date" : parking_data.date.tolist(),
-        "snowfall_emergency" : snowfall_data.emergency.tolist(),
-        "snowfall_date" : snowfall_data.date.tolist()    
+        "emergency" : towcounts.index.tolist(),
+        "tows" : towcounts.tolist(),
+        "parking" : parkingcounts.tolist(),
+        "snowfall" : snowfallaverage.tolist()
     }
 
-<<<<<<< HEAD
+    return jsonify(data)
+
 @app.route("/sqlBubble")
 def buildBubble():
 
@@ -251,8 +253,5 @@ def buildBubble():
 
 
 
-=======
-    return jsonify(data)
->>>>>>> 86b6f72cf7d6339c383be7fee129fa7e0994c466
 if __name__ == "__main__":
     app.run()
