@@ -38,21 +38,21 @@ function getRadius(d) {
 function buildSnowMap(snowEmerg) {
     console.log("Build new chart");
   
-    let url = `/snowgeojson/${snowEmerg}`;
-    let outerurl = `/towing/${snowEmerg}`;
+    let snowurl = `/snowgeojson/${snowEmerg}`;
+    let towurl = `/towing/${snowEmerg}`;
 
-    d3.json(outerurl).then(function(outerresponse){
+    d3.json(towurl).then(function(towingData){
 
-        d3.json(url).then(function(response) {
+        d3.json(snowurl).then(function(snowfallData) {
 
-            d3.json(communitiesUrl).then(function(innerResponse) {
-                console.log(innerResponse);
+            d3.json(communitiesUrl).then(function(communityData) {
+                console.log(communityData);
                 createFeatures(snowfallData.features, communityData.features, towingData);
             })
     
-            console.log(response);
+            console.log(snowfallData);
         });
-        console.log(outerresponse);
+        console.log(towingData);
         
         // console.log(getColorScheme(response.otu_ids.slice(0,10), colorDict));
         
@@ -84,36 +84,81 @@ function createSnowfallLayer(snowfallData) {
     return snowfall;
 }
 
-function createTowingLayer(towingData, emergency) {
+function createTowingLayer(towingData) {
 
-    let tows = L.markerClusterGroup();
+    var tows = L.markerClusterGroup();
   
-    towingData.forEach(function(data) {
-  
-      if (data.emergency === emergency) {
-        tows.addLayer(L.marker([data.latitude, data.longitude]));
-      }
-    });
+    for (var i = 0; i < towingData.length; i++) {
+
+          tows.addLayer(L.marker([towingData.latitude[i], towingData.longitude[i]]));
+    }
+    console.log(tows);
     return tows;
 }
 
 function createFeatures(snowfallData, communityData, towingData) {
     
-    let communities = L.geoJSON(communityData, {
+    var communities = L.geoJSON(communityData, {
         style: function(feature) {
         return {color: "blue", weight: 1};
     }
   });
 
-  let snowfall = createSnowfallLayer(snowfallData);
+  var snowfall = createSnowfallLayer(snowfallData);
 
-  let tows = createTowingLayer(towingData, emergency);
+  var tows = createTowingLayer(towingData);
 
   // Sending our layers to createMap
   createMap(snowfall, communities, tows); 
 }
 
+function updateMap(snowEmerg) {
+
+    // remove old layers
+    this.removeLayer(snowfall);
+    this.removeLayer(tows);
+
+    console.log("Update chart");
+  
+    let snowurl = `/snowgeojson/${snowEmerg}`;
+    let towurl = `/towing/${snowEmerg}`;
+
+    d3.json(towurl).then(function(towingData){
+
+        d3.json(snowurl).then(function(snowfallData) {
+
+            d3.json(communitiesUrl).then(function(communityData) {
+                console.log(communityData);
+                createFeatures(snowfallData.features, communityData.features, towingData);
+            })
+    
+            console.log(snowfallData);
+        });
+        console.log(towingData);
+        
+        // console.log(getColorScheme(response.otu_ids.slice(0,10), colorDict));
+        
+    });
+
+    var communities = L.geoJSON(communityData, {
+        style: function(feature) {
+        return {color: "blue", weight: 1};
+    }
+  });
+
+  var snowfall = createSnowfallLayer(snowfallData);
+
+  var tows = createTowingLayer(towingData);
+
+    // create new layers
+
+    // push layers to the map
+
+    //
+}
 function createMap(snowfall, communities, tows) {
+
+    // document.getElementById('snowfallmap').innerHTML = "<div id='snowfallmap' style='width: 100%; height: 100%;'></div>";
 
   // Define streetmap and darkmap layers
   var satelliteMap = L.tileLayer("https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}", {
@@ -156,7 +201,7 @@ function createMap(snowfall, communities, tows) {
     center: [
       44.99, -93.26
     ],
-    zoom: 11,
+    zoom: 14,
     layers: [satelliteMap, snowfall, communities]
   });
 
@@ -165,13 +210,13 @@ function createMap(snowfall, communities, tows) {
   legend.onAdd = function (map) {
 
     var div = L.DomUtil.create('div', 'info legend');
-    var snowfall = [0, 1, 2, 3, 4, 5];
+    var snowfalls = [0, 1, 2, 3, 4, 5];
     var labels = ['0-1', '1-2', '2-3', '3-4', '4-5', '5+'];
 
     // loop through our magnitude intervals and generate a label with a colored square for each interval
-    for (var i = 0; i < magnitudes.length; i++) {
+    for (var i = 0; i < snowfalls.length; i++) {
         div.innerHTML +=
-            '<i style="background:' + getColor(magnitudes[i]) + '"></i> ' + labels[i] + '<br>';
+            '<i style="background:' + getColor(snowfalls[i]) + '"></i> ' + labels[i] + '<br>';
     }
     return div;
   };  // end legend.onAdd
