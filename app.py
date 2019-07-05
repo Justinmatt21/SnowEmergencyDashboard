@@ -2,6 +2,11 @@ import os
 
 import pandas as pd
 import numpy as np
+#import geojson
+import datetime
+from dateutil.parser import parse
+
+import create_geojson
 
 import sqlalchemy
 from sqlalchemy.ext.automap import automap_base
@@ -12,6 +17,7 @@ from sqlalchemy import create_engine
 
 from flask import Flask, jsonify, render_template
 from flask_sqlalchemy import SQLAlchemy
+
 
 app = Flask(__name__)
 
@@ -28,11 +34,127 @@ Parking = Base.classes.parking
 Towing = Base.classes.towing
 Snowfall = Base.classes.snowfall
 Episode = Base.classes.episodes
+Bsnowfall = Base.classes.bsnowfall
+
+METROCOUNTIES = ['HENNEPIN', 'RAMSEY', 'ANOKA', 'CARVER', 'DAKOTA', 'SCOTT', 'WRIGHT', 'SHERBURNE', 'ISANTI',\
+                'WASHINGTON', 'CHISAGO']
+
+def filter_by_dates(df, start_date, end_date, counties=METROCOUNTIES):
+    """For each station, return the cumulative snowfall from start_date to end_date, inclusive"""
+    
+    #print("filtering")
+
+    number_of_days = (end_date - start_date).days + 1 # since inclusive
+
+    range_of_days = [start_date + datetime.timedelta(days=day) for day in range(number_of_days)]
+    #print(range_of_days)
+
+    #print("type of date", df.loc[1,'date'])
+
+    df['date'] = [parse(date) for date in df['date']]
+
+    #print("type of date", df.loc[1,'date'])
+    
+    time_cond = df['date'].isin(range_of_days)
+    print("time cond", time_cond.any())
+
+    county_cond = df['county'].isin(counties)
+    #print("county_cond", county_cond.any())
+
+    combined_cond = time_cond & county_cond
+    #print("combined_cond", combined_cond.any())
+
+    result = df[combined_cond]
+
+    return result
+
+def group_and_summarize_dataframe (df, grouping, stats):      
+    # Create an empty dataframe to store the results.
+    # print("grouping__________________________________________________")
+    results_df = pd.DataFrame()
+    grouped_df = df.groupby(grouping)
+    for name, column, agg_func in stats:
+        results_df[name] = grouped_df[column].agg(agg_func)
+        
+    return results_df.reset_index()
+
+def metro_snowtotals_by_dates(df, start_date, end_date):
+    
+    # print("metro_snowtotals_by_dates______________________________________")
+    # print(start_date)
+    # print(end_date)
+
+    filtered_df = filter_by_dates(df, start_date, end_date)
+    # print(filtered_df)
+
+    total_df = group_and_summarize_dataframe(filtered_df, 'station',\
+                                           [('name', 'name', lambda x: x.unique()),\
+                                            ('county', 'county', lambda x: x.unique()),\
+                                            ('longitude', 'longitude', lambda x: x.unique()),\
+                                            ('latitude', 'latitude',  lambda x: x.unique()),\
+                                            ('snowtotal', 'snowfall', 'sum')])
+    # print(total_df)
+
+    return total_df
+
+# The code below was not mine - the source is given below
+# https://geoffboeing.com/2015/10/exporting-python-data-geojson/
+
+#import geojson
+
+def df_to_geojson(df, properties, lat='latitude', lon='longitude'):
+    # print(df)
+    geojson = {'type':'FeatureCollection', 'features':[]}
+    for _, row in df.iterrows():
+        feature = {'type':'Feature',
+                   'properties':{},
+                   'geometry':{'type':'Point',
+                               'coordinates':[]}}
+        feature['geometry']['coordinates'] = [row[lon],row[lat]]
+        for prop in properties:
+            feature['properties'][prop] = row[prop]
+        geojson['features'].append(feature)
+
+    # print(geojson)
+
+    return jsonify(geojson)
+
 
 @app.route("/")
 def index():
     """Return the homepage."""
     return render_template("index.html")
+
+@app.route("/snowgeojson/<name>")
+def snowgeojson(name):
+    stmt = db.session.query(Episode).statement
+    df = pd.read_sql_query(stmt, db.session.bind)
+    # print(df)
+
+    emergency_df = df[ df['emergency'] == name ]
+    
+    # print(emergency_df)
+
+    stmt = db.session.query(Bsnowfall).statement
+    snow_df = pd.read_sql_query(stmt, db.session.bind)
+
+    # print(snow_df)
+
+    start_date = emergency_df.storm_begin_date.tolist()[0]
+    print("start_date", start_date, "is of type: ", type(start_date))
+
+    end_date  = emergency_df.declaration_date.tolist()[0]
+    
+    start_date = parse(start_date)
+    print("start_date", start_date, "is of type: ", type(start_date))
+
+    end_date = parse(end_date)
+    
+    snow_amounts_df = metro_snowtotals_by_dates(snow_df, start_date, end_date)
+
+    # print(snow_amounts_df)
+
+    return df_to_geojson(snow_amounts_df, ['station', 'name', 'snowtotal'])
 
 @app.route("/episode/<name>")
 def episode(name):
@@ -52,7 +174,7 @@ def episode(name):
         "narrative": episode_data.narrative.tolist()
     }
 
-    print(data)
+    # print(data)
     return jsonify(data)
 
 @app.route("/episode_satellite/<name>")
@@ -60,7 +182,7 @@ def episode_satellite(name):
     stmt = db.session.query(Episode).statement
     df = pd.read_sql_query(stmt, db.session.bind)
 
-    print("In episode_satellite")
+    # print("In episode_satellite")
     # Filter the data based on the sample number and
     # only keep rows with values above 1
     episode_data = df.loc[df['emergency']==name, ['gif_url']]
@@ -73,7 +195,7 @@ def episode_satellite(name):
         "gif_url": episode_data.gif_url.tolist()
     }
 
-    print(data)
+    # print(data)
     return jsonify(data)
 
 @app.route("/emergency_summary/<name>")

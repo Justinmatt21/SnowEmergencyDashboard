@@ -49,3 +49,17 @@ div.tooltip {
 .click-capture {
     pointer-events: all;
 }
+
+#mainpic {
+    max_width: auto;
+    max_heigth: 300px;
+}
+
+@media (max-width:767px) {
+    #mainpic {
+      float: none;
+      max-width: auto;
+      max-height: 250px;
+      padding: 10px;
+    }
+}
