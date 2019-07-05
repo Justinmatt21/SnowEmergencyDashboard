@@ -198,6 +198,20 @@ def episode_satellite(name):
     # print(data)
     return jsonify(data)
 
+@app.route("/towing/<name>")
+def towing(name):
+    stmt_tow = db.session.query(Towing).statement
+    towing_df = pd.read_sql_query(stmt_tow, db.session.bind)
+    towing_data = towing_df.loc[towing_df['emergency']==name, ['longitude', 'latitude']]
+
+    data = {
+        "longitude" : towing_data.longitude.tolist(),
+        "latitude" : towing_data.latitude.tolist(),
+     }
+
+    return jsonify(data)
+
+
 @app.route("/emergency_summary/<name>")
 def emergency_summary(name):
     stmt_tow = db.session.query(Towing).statement

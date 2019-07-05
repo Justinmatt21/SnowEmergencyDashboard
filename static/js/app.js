@@ -40,6 +40,9 @@ function initChart() {
 init();
 
 function buildEpisode(snowEmergency) {
+
+  buildSnowMap(snowEmergency);
+
   console.log("Build storm description:"); 
 
   let url = `/episode/${snowEmergency}`;
@@ -48,7 +51,6 @@ function buildEpisode(snowEmergency) {
     
     console.log(response);
     let responseArray = Object.entries(response);
-
     //console.log("Clearing old panel data");
     d3.select("#episode-text").html("");
 
@@ -90,4 +92,18 @@ function buildSatellite(snowEmergency) {
         return `<hr><img class="image-responsive" src=${d[1][0]} width: 25%>`
       });
   });
+}
+
+function buildSnowMap(snowEmerg) {
+  console.log("Build new chart");
+
+  let url = `/snowgeojson/${snowEmerg}`;
+
+  d3.json(url).then(function(response) {
+  
+      console.log(response);
+      
+      // console.log(getColorScheme(response.otu_ids.slice(0,10), colorDict));
+
+    });
 }
