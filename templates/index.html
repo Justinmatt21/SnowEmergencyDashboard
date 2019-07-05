@@ -80,14 +80,17 @@
                               </tr>
                           </td>
                       </tr>
-                  </table>
-                <div id="d3-map"></div>
-              </div>
-              <div class="col-md-6">
-                <div id="leaflet-map"></div>
-              </div>
-
-            </div>
+                      <tr>
+                        <td><label class="switch">
+                            <input id="tickets-toggle" type="checkbox" checked>
+                            <div class="slider round"></div>
+                        </label></td>
+                        <td>Tickets</td>
+                    </tr>
+                    </table>
+                  </div>
+                </div>
+                
             <div class="row">
               <div class="col-md-12">
                 <div id="bar-chart"><p>Bubble chart here</p></div>
@@ -99,8 +102,18 @@
               </div>
             </div>
 
-      
-      <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+            <div class="containe">
+            <div class="row">
+              <div class="col-md-6"> 
+            <div id="episode-text"></div>
+            </div>
+
+            <div class = "col-md-6">
+              <div id="episode-satellite"></div>
+              </div>
+              </div>
+
+
       <script src="../static/js/app.js"></script>
       <script src="../static/js/mapping.js"></script>
       
