@@ -7,6 +7,8 @@ import sqlalchemy
 from sqlalchemy.ext.automap import automap_base
 from sqlalchemy.orm import Session
 from sqlalchemy import create_engine
+# I added
+#from sqlalchemy import Integer, String, Text, Binary, Column
 
 from flask import Flask, jsonify, render_template
 from flask_sqlalchemy import SQLAlchemy
@@ -25,31 +27,53 @@ Base.prepare(db.engine, reflect=True)
 Parking = Base.classes.parking
 Towing = Base.classes.towing
 Snowfall = Base.classes.snowfall
-
+Episode = Base.classes.episodes
 
 @app.route("/")
 def index():
     """Return the homepage."""
     return render_template("index.html")
 
-
-@app.route("/emergency/<name>")
-def emergency(name):
-    #"""Return `otu_ids`, `otu_labels`,and `sample_values`."""
-    stmt = db.session.query(Snowfall).statement
+@app.route("/episode/<name>")
+def episode(name):
+    stmt = db.session.query(Episode).statement
     df = pd.read_sql_query(stmt, db.session.bind)
 
+    print(name)
     # Filter the data based on the sample number and
     # only keep rows with values above 1
-    snowfall_data = df.loc[df['emergency']==name, ['Snowfall']]
+    episode_data = df.loc[df['emergency']==name, ['narrative']]
 
     # Sort by sample
     #sample_data.sort_values(by=sample, ascending=False, inplace=True)
 
     # Format the data to send as json
     data = {
-        "snowfall": snowfall_data.Snowfall.tolist()
+        "narrative": episode_data.narrative.tolist()
     }
+
+    print(data)
+    return jsonify(data)
+
+@app.route("/episode_satellite/<name>")
+def episode_satellite(name):
+    stmt = db.session.query(Episode).statement
+    df = pd.read_sql_query(stmt, db.session.bind)
+
+    print("In episode_satellite")
+    # Filter the data based on the sample number and
+    # only keep rows with values above 1
+    episode_data = df.loc[df['emergency']==name, ['gif_url']]
+
+    # Sort by sample
+    #sample_data.sort_values(by=sample, ascending=False, inplace=True)
+
+    # Format the data to send as json
+    data = {
+        "gif_url": episode_data.gif_url.tolist()
+    }
+
+    print(data)
     return jsonify(data)
 
 @app.route("/emergency_summary/<name>")
