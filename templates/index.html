@@ -5,8 +5,8 @@
     crossorigin="anonymous">
       <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
       <script src="https://d3js.org/d3.v5.min.js"></script>
-      <script src='../static/data/mplsNeighborhoods.js'></script>
-      <script src='../static/data/mplsCommunities.js'></script>
+      <script src="https://d3js.org/d3-tile.v0.0.min.js"></script> 
+      <script src="https://d3js.org/topojson.v1.min.js"></script>
       <!--<link rel= "stylesheet" type= "text/css" href= "{{ url_for('static',filename='styles/style.css') }}">-->
       <link rel="stylesheet" type = "text/css" href = "../static/styles/style.css">
       <style>
@@ -18,51 +18,80 @@
     </head>
     <body>
           <div class = "hero text-center">
-              <h1 class = "hero-text">Snow Emergencies</h1>
+              <h1 class = "hero-text">Minneapolis Snow Emergencies</h1>
           </div>
 
-
+            <div class="row">
+              <div class = "col-md-2">
+                  <div class="card" style="width: 18rem;">
+                      <img src="../static/images/snowEmergParking.png" class="card-img-top" alt="...">
+                      <div class="card-body">
+                        <h5 class="card-title">Snow Emergencies</h5>
+                        <p class="card-text">Getting a ticket sucks. Getting towed is worse. What can we learn about Minneapolis snow emergencies?
+                          - Does the city make money from our misery? 
+                        - Where are the most common locations to get ticketed and towed</p>
+                      </div>
+                    </div>
+              </div>
+              <div class = "col-md-10">
+                <div id="bubble"><p>Bubble chart here</p></div>
+              </div>
+            </div>
             <div id="toggleContainer" class="row">
-                  <div class = "col-md-3">
-                    <table class = "table table-borderless">
-                        <tr>
-                          <td class = "right-align">
-                            <select id="selDataset" onchange="optionChanged(this.value)"></select>
-                          </td>
-                        </tr>
-                        <tr>
-                            <td><label class="switch">
+              <div class = "col-md-12">
+                  <select id="selDataset" onchange="optionChanged(this.value)"></select>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-md-6">
+                  <table class = "table table-borderless">
+                      <tr>
+                          <td>
+                            <tr>
+                            <td>
+                              <label class="switch">
                                 <input id="hood-toggle" type="checkbox" checked>
                                 <div class="slider round"></div>
-                            </label></td>
+                              </label>
+                            </td>
                             <td>Neighborhoods</td>
-                        </tr>
-                        <tr>
-                            <td class="right-align"><label class="switch">
+                            </tr>
+                            <tr>
+                            <td><label class="switch">
                                 <input id="comm-toggle" type="checkbox" checked>
                                 <div class="slider round"></div>
                             </label></td>
                             <td>Communities</td>
-                        </tr>
-                        <tr>
-                          <td><label class="switch">
-                              <input id="tows-toggle" type="checkbox" checked>
-                              <div class="slider round"></div>
-                          </label></td>
-                          <td>Tows</td>
+                            </tr>
+                          </td>
+                          <td>
+                              <tr>
+                                <td><label class="switch">
+                                    <input id="tickets-toggle" type="checkbox" checked>
+                                    <div class="slider round"></div>
+                                </label></td>
+                                <td>Tickets</td>
+                              </tr><tr>
+                                <td><label class="switch">
+                                    <input id="tows-toggle" type="checkbox" checked>
+                                    <div class="slider round"></div>
+                                </label></td>
+                                <td>Tows</td>
+                              </tr>
+                          </td>
                       </tr>
-                      <tr>
-                        <td><label class="switch">
-                            <input id="tickets-toggle" type="checkbox" checked>
-                            <div class="slider round"></div>
-                        </label></td>
-                        <td>Tickets</td>
-                    </tr>
-                    </table>
-                  </div>
-                </div>
+                  </table>
+                <div id="d3-map"></div>
+              </div>
+              <div class="col-md-6">
+                <div id="leaflet-map"></div>
+              </div>
+
+            </div>
             <div class="row">
-              <div id="mapContainer"></div>
+              <div class="col-md-12">
+                <div id="bar-chart"><p>Bubble chart here</p></div>
+              </div>
             </div>
             <div class="row">
               <div class = "col-md-12">
