@@ -1,4 +1,4 @@
-var map = d3.select('#mapContainer');
+var map = d3.select('#d3-map');
 
 var margin = {top: -5, right: -5, bottom: -5, left: -5},
 width = 700 - margin.left - margin.right,
