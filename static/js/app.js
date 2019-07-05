@@ -116,6 +116,7 @@ function initBubble() {
 };
 
 // Initialize the dashboard
-init();
 initBubble();
+init();
+
 
