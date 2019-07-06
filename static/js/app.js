@@ -95,8 +95,7 @@ function buildSatellite(snowEmergency) {
   });
 }
 
-// API_KEY = window.prompt("Enter your mapbox API Key", "");
-const API_KEY = "pk.eyJ1IjoiZG91Z2RyYWtlIiwiYSI6ImNqeDEwbDV5MDA0dHE0Ym80aHF6M2Z3eTAifQ.0qGzAA9kqM1D2sKTlz4haQ";
+var API_KEY = window.prompt("Enter your mapbox API Key", "");
 
 function buildSnowMap(snowEmerg) {
     /* data route */
