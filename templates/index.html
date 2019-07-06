@@ -16,34 +16,47 @@
       
       </style>
     </head>
+
     <body>
           <div class = "hero text-center">
-              <h1 class = "hero-text">Minneapolis Snow Emergencies</h1>
+              <h1 class = "hero-text">Minneapolis Snow Emergencies at a Glance</h1>
           </div>
 
-            <div class="row">
-              <div class = "col-md-2">
+          <div class="container-fluid vertical-padded">
+            <div id ="my-row" class="row">
+              <div class = "col-xl-2 col-lg-2 col-md-2">
                   <div class="card" style="width: 18rem;">
                       <img src="../static/images/snowEmergParking.png" class="card-img-top img-thumbnail" alt="...">
                       <div class="card-body">
                         <h5 class="card-title">Snow Emergencies</h5>
                         <p class="card-text">Getting a ticket sucks. Getting towed is worse. What can we learn about Minneapolis snow emergencies?
                           - Does the city make money from our misery? 
-                        - Where are the most common locations to get ticketed and towed</p>
+                        - Where are the most common locations to get ticketed and towed?</p>
                       </div>
                     </div>
               </div>
-              <div class = "col-md-10">
-                <div id="bubble"><p>Bubble chart here</p></div>
+              <div class = "col-xl-10 col-lg-10 col-md-10">
+                <div id="bubble"></div>
               </div>
             </div>
+          </div>
+
+          <div class = "hero text-center">
+              <h3 class = "hero-text">Plotting Each Tow and Ticket</h3>
+            <!--this is the snowfall gif stripe.  put me anywhere-->
+          </div>
+
+          <div class = "container-fluid top-padded left-padded">
             <div id="toggleContainer" class="row">
               <div class = "col-md-12">
                   <select id="selDataset" onchange="optionChanged(this.value)"></select>
               </div>
             </div>
+          </div>
+          
+          <div class="container-fluid bottom-padded">
             <div class="row">
-              <div class="col-md-6">
+              <div class="col-md-4">
                   <table class = "table table-borderless">
                       <tr>
                           <td>
@@ -88,34 +101,41 @@
                         <td>Tickets</td>
                     </tr>
                     </table>
-                  </div>
-                </div>
+              </div>
+
+              <div class="col-md-8">
+                <div id="d3-map"></div>
+              </div>
+            </div>
+          </div>
+
+          <div class = "hero text-center">
+              <h3 class = "hero-text">Describing Each Emergency</h3>
+            <!--this is the snowfall gif stripe.  put me anywhere-->
+          </div>
                 
             <div class="row">
               <div class="col-md-12">
-                <div id="bar-chart"><p>Bubble chart here</p></div>
-              </div>
-            </div>
-            <div class="row">
-              <div class = "col-md-12">
-                <div id="bubble"></div>
+               <!-- <div id="barchart"></div> -->
               </div>
             </div>
 
-            <div class="containe">
+          <div class="container-fluid vertical-padded">
             <div class="row">
               <div class="col-md-6"> 
-            <div id="episode-text"></div>
-            </div>
+                <div id="episode-text"></div>
+              </div>
 
-            <div class = "col-md-6">
-              <div id="episode-satellite"></div>
+              <div class = "col-md-6">
+                <div id="episode-satellite"></div>
               </div>
-              </div>
+            </div>
+          </div>
 
 
       <script src="../static/js/app.js"></script>
       <script src="../static/js/mapping.js"></script>
+     <!-- <script src="../static/js/barchart.js"></script> -->
       
 
     </body>

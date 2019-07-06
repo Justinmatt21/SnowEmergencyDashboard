@@ -6,7 +6,7 @@ import numpy as np
 import datetime
 from dateutil.parser import parse
 
-import create_geojson
+#import create_geojson
 
 import sqlalchemy
 from sqlalchemy.ext.automap import automap_base

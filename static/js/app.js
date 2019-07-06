@@ -14,8 +14,10 @@ function init() {
   
       const firstSnowEmerg = snowEmergs["snowEmergencies"][0];
       plotSnowEmergency(firstSnowEmerg);
-      console.log(firstSnowEmerg["name"].slice(5));
-      buildEpisode(firstSnowEmerg["name"].slice(5));
+      //console.log(firstSnowEmerg["name"].slice(5));
+      //buildEpisode(firstSnowEmerg["name"].slice(5));
+      console.log(firstSnowEmerg["name"].slice(0, -5));
+      buildEpisode(firstSnowEmerg["name"].slice(0, -5));
     });
   }
   
@@ -24,7 +26,7 @@ function init() {
           snowEmergs["snowEmergencies"].forEach((snowEmerg) => {
             if (snowEmerg["name"] === newSnowEmerg) {
                 plotSnowEmergency(snowEmerg);
-                buildEpisode(snowEmerg["name"].slice(5));
+                buildEpisode(snowEmerg["name"].slice(0, -5));
             }
           });
     });
@@ -126,6 +128,8 @@ function buildEpisode(snowEmergency) {
   console.log("Build storm description:"); 
 
   let url = `/episode/${snowEmergency}`;
+
+  console.log(url);
 
   d3.json(url).then(function(response){
     
