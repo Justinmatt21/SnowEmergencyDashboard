@@ -125,6 +125,42 @@ def index():
     """Return the homepage."""
     return render_template("index.html")
 
+@app.route("/snowfall/<name>")
+def snowfall(name):
+    stmt = db.session.query(Episode).statement
+    df = pd.read_sql_query(stmt, db.session.bind)
+    # print(df)
+
+    emergency_df = df[ df['emergency'] == name ]
+    
+    # print(emergency_df)
+
+    stmt = db.session.query(Bsnowfall).statement
+    snow_df = pd.read_sql_query(stmt, db.session.bind)
+
+    # print(snow_df)
+
+    start_date = emergency_df.storm_begin_date.tolist()[0]
+    print("start_date", start_date, "is of type: ", type(start_date))
+
+    end_date  = emergency_df.declaration_date.tolist()[0]
+    
+    start_date = parse(start_date)
+    print("start_date", start_date, "is of type: ", type(start_date))
+
+    end_date = parse(end_date)
+    
+    snow_amounts_df = metro_snowtotals_by_dates(snow_df, start_date, end_date)
+
+    data = {
+        "longitude": snow_amounts_df.longitude.tolist(),
+        "latitude": snow_amounts_df.latitude.tolist(),
+        "station": snow_amounts_df.station.tolist(),
+        "name": snow_amounts_df.name.tolist(),
+        "snowfall": snow_amounts_df.snowtotal.tolist()
+    }
+    return jsonify(data)
+
 @app.route("/snowgeojson/<name>")
 def snowgeojson(name):
     stmt = db.session.query(Episode).statement
